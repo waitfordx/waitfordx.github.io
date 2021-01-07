@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://waitfordx.github.io</id>
     <title>Gridea</title>
-    <updated>2021-01-04T02:15:25.205Z</updated>
+    <updated>2021-01-07T03:39:59.945Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://waitfordx.github.io"/>
     <link rel="self" href="https://waitfordx.github.io/atom.xml"/>
@@ -10,6 +10,36 @@
     <logo>https://waitfordx.github.io/images/avatar.png</logo>
     <icon>https://waitfordx.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[WebSocket 了解]]></title>
+        <id>https://waitfordx.github.io/post/websocket-liao-jie/</id>
+        <link href="https://waitfordx.github.io/post/websocket-liao-jie/">
+        </link>
+        <updated>2021-01-07T03:29:36.000Z</updated>
+        <content type="html"><![CDATA[<p>websocket 是一种网络通信协议</p>
+<h2 id="为什么需要-websocket">为什么需要 WebSocket</h2>
+<p>双向平等对话。全双工通讯<br>
+<img src="https://waitfordx.github.io/post-images/1609990448481.png" alt="" loading="lazy"></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[WINDOWS 常用命令]]></title>
+        <id>https://waitfordx.github.io/post/windows_command/</id>
+        <link href="https://waitfordx.github.io/post/windows_command/">
+        </link>
+        <updated>2021-01-04T02:35:29.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="文件管理">文件管理</h2>
+<h3 id="创建一个空文件">创建一个空文件</h3>
+<p><code>fsutil file createnew [path] [size]</code></p>
+<h2 id="环境变量">环境变量</h2>
+<h3 id="查看系统的所有环境变量">查看系统的所有环境变量</h3>
+<pre><code>Get-ChildItem env:
+dir env:
+</code></pre>
+<h3 id="查看具体的环境变量值">查看具体的环境变量值</h3>
+<p><code>$env name</code></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://waitfordx.github.io/post/hello-gridea/</id>
