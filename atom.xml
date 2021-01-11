@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://waitfordx.github.io</id>
     <title>Gridea</title>
-    <updated>2021-01-07T03:39:59.945Z</updated>
+    <updated>2021-01-11T11:45:50.152Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://waitfordx.github.io"/>
     <link rel="self" href="https://waitfordx.github.io/atom.xml"/>
@@ -10,6 +10,40 @@
     <logo>https://waitfordx.github.io/images/avatar.png</logo>
     <icon>https://waitfordx.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[Git 日常使用总结]]></title>
+        <id>https://waitfordx.github.io/post/git_normal/</id>
+        <link href="https://waitfordx.github.io/post/git_normal/">
+        </link>
+        <updated>2021-01-11T11:43:36.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="删除已加入缓存的文件">删除已加入缓存的文件</h3>
+<p><code>git rm --cached [file]</code></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[计算机网络总汇（持续更新）]]></title>
+        <id>https://waitfordx.github.io/post/ji-suan-ji-wang-luo-zong-hui-chi-xu-geng-xin/</id>
+        <link href="https://waitfordx.github.io/post/ji-suan-ji-wang-luo-zong-hui-chi-xu-geng-xin/">
+        </link>
+        <updated>2021-01-07T08:30:09.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="mac-地址">mac 地址</h2>
+<h2 id="ip-地址">IP 地址</h2>
+<h2 id="port-端口">port 端口</h2>
+<h2 id="主机名">主机名</h2>
+<h2 id="子网掩码">子网掩码</h2>
+<h2 id="数据包">数据包</h2>
+<h2 id="通信协议">通信协议</h2>
+<h2 id="tcpudp">TCP/UDP</h2>
+<h2 id="数据包经由路由器到达下一台设备">数据包经由路由器到达下一台设备</h2>
+<h2 id="一款程序怎么在局域网之间通信">一款程序怎么在局域网之间通信</h2>
+<h2 id="一款程序怎么在互联网之间通信">一款程序怎么在互联网之间通信</h2>
+<h2 id="视频资料">视频资料</h2>
+<ul>
+<li><a href="https://www.bilibili.com/video/av40766904">华南理工大学 计算机网络 MOOC</a></li>
+<li><a href="https://www.bilibili.com/video/av40761275">杭州电子科技大学 计算机网络自学笔记 MOOC</a></li>
+</ul>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[WebSocket 了解]]></title>
         <id>https://waitfordx.github.io/post/websocket-liao-jie/</id>
@@ -23,12 +57,20 @@
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[WINDOWS 常用命令]]></title>
+        <title type="html"><![CDATA[PowerShell 常用命令]]></title>
         <id>https://waitfordx.github.io/post/windows_command/</id>
         <link href="https://waitfordx.github.io/post/windows_command/">
         </link>
         <updated>2021-01-04T02:35:29.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="文件管理">文件管理</h2>
+        <content type="html"><![CDATA[<h2 id="配置文件-profile">配置文件 profile</h2>
+<p>PowerShell 的配置文件 profile,  一共有四个。</p>
+<ul>
+<li>$PROFILE.AllUsersAllHosts ：所有用户、所有Shell</li>
+<li>$PROFILE.AllUsersCurrentHost : 所有用户、当前Shell</li>
+<li>$PROFILE.CurrentUserAllHosts ： 当前用户、所有Shell</li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mi>R</mi><mi>O</mi><mi>F</mi><mi>I</mi><mi>L</mi><mi>E</mi><mi mathvariant="normal">.</mi><mi>C</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>U</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>C</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>H</mi><mi>o</mi><mi>s</mi><mi>t</mi><mo>(</mo></mrow><annotation encoding="application/x-tex">PROFILE.CurrentUserCurrentHost (</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord mathdefault">L</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord">.</span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">n</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.10903em;">U</span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">n</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mopen">(</span></span></span></span>PROFILE)： 当前用户、当前Shell</li>
+</ul>
+<h2 id="文件管理">文件管理</h2>
 <h3 id="创建一个空文件">创建一个空文件</h3>
 <p><code>fsutil file createnew [path] [size]</code></p>
 <h2 id="环境变量">环境变量</h2>
@@ -38,6 +80,16 @@ dir env:
 </code></pre>
 <h3 id="查看具体的环境变量值">查看具体的环境变量值</h3>
 <p><code>$env name</code></p>
+<h3 id="查看-windows-系统日志">查看 windows 系统日志</h3>
+<p>Wevtutil</p>
+<h3 id="别名">别名</h3>
+<ul>
+<li>查看别名<br>
+<code>Get-Alias</code></li>
+<li>创建/更改别名<br>
+<code>Set-Alias</code><br>
+<code>Set-Alias ls Get-ChildItem</code></li>
+</ul>
 ]]></content>
     </entry>
     <entry>
