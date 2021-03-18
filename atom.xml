@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://waitfordx.github.io</id>
     <title>Gridea</title>
-    <updated>2021-01-11T11:45:50.152Z</updated>
+    <updated>2021-03-18T13:06:57.501Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://waitfordx.github.io"/>
     <link rel="self" href="https://waitfordx.github.io/atom.xml"/>
@@ -10,6 +10,102 @@
     <logo>https://waitfordx.github.io/images/avatar.png</logo>
     <icon>https://waitfordx.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Gridea</rights>
+    <entry>
+        <title type="html"><![CDATA[C++ 11新特性 ：enable_shared_from_this]]></title>
+        <id>https://waitfordx.github.io/post/c-11-xin-te-xing-enable_shared_from_this/</id>
+        <link href="https://waitfordx.github.io/post/c-11-xin-te-xing-enable_shared_from_this/">
+        </link>
+        <updated>2021-03-18T12:04:16.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="cpp-reference">cpp reference</h2>
+<p>std::enable_shared_from_this allows an object t that is currently managed by a std::shared_ptr named pt to safely generate additional std::shared_ptr instances pt1, pt2, ... that all share ownership of t with pt.</p>
+<p>Publicly inheriting from std::enable_shared_from_this<T> provides the type T with a member function shared_from_this. If an object t of type T is managed by a std::shared_ptr<T> named pt, then calling T::shared_from_this will return a new std::shared_ptr<T> that shares ownership of t with pt.</p>
+<p>std::enable_shared_from_this 允许一个已经被std::shared_ptr管理的对象 t 安全的产生其他的 std::shared_ptr对象实例，它们都共享 t 对象。<br>
+从std::enable_shared_from_this<T> public 继承，会获得一个成员函数 shared_from_this. T::shared_from_this 会返回一个 std::shared_ptr 对象共享 t .</p>
+<h2 id="使用场景-保证异步回调中操作的对象依然有效">使用场景 : 保证异步回调中操作的对象依然有效</h2>
+<pre><code>int *raw_ptr = new int;
+std::shared_ptr&lt;int&gt; ptr_1(raw_ptr);
+std::shared_ptr&lt;int&gt; ptr_2(raw_ptr);
+</code></pre>
+<p>ptr_1 和 ptr_2 都调用了shared_ptr 的构造函数，都重新开辟了引用计数的资源。ptr_1 和 ptr_2 指向同一个资源，却都拥有自己的引用计数，因此会导致同一个对象被析构两次。</p>
+<pre><code>int *raw_ptr = new int;
+std::shared_ptr&lt;int&gt; ptr_1(raw_ptr);
+std::shared_ptr&lt;int&gt; ptr_2(ptr_1);
+</code></pre>
+<p>ptr_2调用了 share_ptr 的拷贝构造函数，只做了资源的引用计数的改变，没有额外的资源分配。<br>
+<img src="https://waitfordx.github.io/post-images/1616071008875.png" alt="" loading="lazy"></p>
+<h2 id="工作原理">工作原理</h2>
+<pre><code>template&lt;class _Ty&gt;
+class enable_shared_from_this {	
+public:
+	using _Esft_type = enable_shared_from_this;
+	_NODISCARD shared_ptr&lt;_Ty&gt; shared_from_this()
+		{	
+		return (shared_ptr&lt;_Ty&gt;(_Wptr));
+		}
+	// 成员变量是一个指向资源的弱智能指针
+	mutable weak_ptr&lt;_Ty&gt; _Wptr;
+};
+</code></pre>
+<p>当一个类 A public 继承了 enable_shared_from_this, 就会继承一个成员变量，_Wptr, 当定义第一个智能指针对象的时候shared_ptr&lt; A &gt; ptr1(new A())， 调用 shared_ptr 的普通构造函数，就会初始化_Wptr作为观察A对象资源的一个弱智能指针。<br>
+当我们调用 shared_from_this() 的时候，通过当前A对象的成员变量 _Wptr 来构造一个shared_ptr。</p>
+<pre><code>shared_ptr(const weak_ptr&lt;_Ty2&gt;&amp; _Other)
+{	
+if (!this-&gt;_Construct_from_weak(_Other)) // 从弱智能指针提升一个强智能指针
+	{
+	_THROW(bad_weak_ptr{});
+	}
+}
+</code></pre>
+<p>_Construct_from_weak() 的实现如下</p>
+<pre><code class="language-template&lt;class">bool _Construct_from_weak(const weak_ptr&lt;_Ty2&gt;&amp; _Other)
+{	
+if (_Other._Rep &amp;&amp; _Other._Rep-&gt;_Incref_nz())
+	{
+	_Ptr = _Other._Ptr;
+	_Rep = _Other._Rep;
+	return (true);
+	}
+
+return (false);
+}
+</code></pre>
+<p>if通过判断资源的引用计数是否还在，判定对象的存活状态，对象存活，提升成功.</p>
+<h2 id="问题-实际上在构造stdenable_shared_from_thist时并没有初始化stdweak_ptrt成员而是在用这个stdenable_shared_from_thist去构造stdshared_ptr的时候去构造并初始化这个stdweak_ptrt成员">问题 实际上在构造std::enable_shared_from_this<T>时，并没有初始化std::weak_ptr<T>成员，而是在用这个std::enable_shared_from_this<T>去构造std::shared_ptr的时候，去构造并初始化这个std::weak_ptr<T>成员</h2>
+<p>必须等子类初始化成功后，父类才能拿到真正的std::weak_ptr。因此，对象必须已经是std::shared_ptr 管理的。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Linux 知识杂记]]></title>
+        <id>https://waitfordx.github.io/post/linux-zhi-shi-za-ji/</id>
+        <link href="https://waitfordx.github.io/post/linux-zhi-shi-za-ji/">
+        </link>
+        <updated>2021-03-08T09:13:24.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="desktop-文件">.desktop 文件</h3>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Qt 问题记录]]></title>
+        <id>https://waitfordx.github.io/post/qt-wen-ti-ji-lu/</id>
+        <link href="https://waitfordx.github.io/post/qt-wen-ti-ji-lu/">
+        </link>
+        <updated>2021-03-08T04:29:59.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="本地发布一个qml程序">本地发布一个qml程序</h3>
+<p>windeployqt demo.exe -qmldir qmlpath</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Windows 系统资源简介]]></title>
+        <id>https://waitfordx.github.io/post/windows-xi-tong-zi-yuan-jian-jie/</id>
+        <link href="https://waitfordx.github.io/post/windows-xi-tong-zi-yuan-jian-jie/">
+        </link>
+        <updated>2021-01-29T03:28:59.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="什么是-cpu-使用率">什么是 CPU 使用率</h3>
+<ul>
+<li>背景知识 ： CPU 的工作原理<br>
+一个时间段内 T ，  CPU 工作时间 W 和总的时间的比率 <code>cpuusage = W / T * 100%</code></li>
+</ul>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Git 日常使用总结]]></title>
         <id>https://waitfordx.github.io/post/git_normal/</id>
@@ -71,6 +167,11 @@
 <li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mi>R</mi><mi>O</mi><mi>F</mi><mi>I</mi><mi>L</mi><mi>E</mi><mi mathvariant="normal">.</mi><mi>C</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>U</mi><mi>s</mi><mi>e</mi><mi>r</mi><mi>C</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>H</mi><mi>o</mi><mi>s</mi><mi>t</mi><mo>(</mo></mrow><annotation encoding="application/x-tex">PROFILE.CurrentUserCurrentHost (</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord mathdefault">L</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord">.</span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">n</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.10903em;">U</span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="mord mathdefault">u</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mord mathdefault">e</span><span class="mord mathdefault">n</span><span class="mord mathdefault">t</span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mopen">(</span></span></span></span>PROFILE)： 当前用户、当前Shell</li>
 </ul>
 <h2 id="文件管理">文件管理</h2>
+<h3 id="创建目录">创建目录</h3>
+<ul>
+<li>创建多级目录 <code>mkdir -p project/bin</code></li>
+<li>创建多个同级目录 <code>mkdir -p bin,lib,include</code></li>
+</ul>
 <h3 id="创建一个空文件">创建一个空文件</h3>
 <p><code>fsutil file createnew [path] [size]</code></p>
 <h2 id="环境变量">环境变量</h2>

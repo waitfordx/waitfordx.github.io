@@ -1,0 +1,231 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>C++ 11新特性 ：enable_shared_from_this | Gridea</title>
+<link rel="shortcut icon" href="https://waitfordx.github.io/favicon.ico?v=1616072814615">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://waitfordx.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="C++ 11新特性 ：enable_shared_from_this | Gridea - Atom Feed" href="https://waitfordx.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="cpp reference
+std::enable_shared_from_this allows an object t that is currently managed by a std::shared_ptr named pt to..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://waitfordx.github.io">
+  <img class="avatar" src="https://waitfordx.github.io/images/avatar.png?v=1616072814615" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              C++ 11新特性 ：enable_shared_from_this
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-03-18
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h2 id="cpp-reference">cpp reference</h2>
+<p>std::enable_shared_from_this allows an object t that is currently managed by a std::shared_ptr named pt to safely generate additional std::shared_ptr instances pt1, pt2, ... that all share ownership of t with pt.</p>
+<p>Publicly inheriting from std::enable_shared_from_this<T> provides the type T with a member function shared_from_this. If an object t of type T is managed by a std::shared_ptr<T> named pt, then calling T::shared_from_this will return a new std::shared_ptr<T> that shares ownership of t with pt.</p>
+<p>std::enable_shared_from_this 允许一个已经被std::shared_ptr管理的对象 t 安全的产生其他的 std::shared_ptr对象实例，它们都共享 t 对象。<br>
+从std::enable_shared_from_this<T> public 继承，会获得一个成员函数 shared_from_this. T::shared_from_this 会返回一个 std::shared_ptr 对象共享 t .</p>
+<h2 id="使用场景-保证异步回调中操作的对象依然有效">使用场景 : 保证异步回调中操作的对象依然有效</h2>
+<pre><code>int *raw_ptr = new int;
+std::shared_ptr&lt;int&gt; ptr_1(raw_ptr);
+std::shared_ptr&lt;int&gt; ptr_2(raw_ptr);
+</code></pre>
+<p>ptr_1 和 ptr_2 都调用了shared_ptr 的构造函数，都重新开辟了引用计数的资源。ptr_1 和 ptr_2 指向同一个资源，却都拥有自己的引用计数，因此会导致同一个对象被析构两次。</p>
+<pre><code>int *raw_ptr = new int;
+std::shared_ptr&lt;int&gt; ptr_1(raw_ptr);
+std::shared_ptr&lt;int&gt; ptr_2(ptr_1);
+</code></pre>
+<p>ptr_2调用了 share_ptr 的拷贝构造函数，只做了资源的引用计数的改变，没有额外的资源分配。<br>
+<img src="https://waitfordx.github.io/post-images/1616071008875.png" alt="" loading="lazy"></p>
+<h2 id="工作原理">工作原理</h2>
+<pre><code>template&lt;class _Ty&gt;
+class enable_shared_from_this {	
+public:
+	using _Esft_type = enable_shared_from_this;
+	_NODISCARD shared_ptr&lt;_Ty&gt; shared_from_this()
+		{	
+		return (shared_ptr&lt;_Ty&gt;(_Wptr));
+		}
+	// 成员变量是一个指向资源的弱智能指针
+	mutable weak_ptr&lt;_Ty&gt; _Wptr;
+};
+</code></pre>
+<p>当一个类 A public 继承了 enable_shared_from_this, 就会继承一个成员变量，_Wptr, 当定义第一个智能指针对象的时候shared_ptr&lt; A &gt; ptr1(new A())， 调用 shared_ptr 的普通构造函数，就会初始化_Wptr作为观察A对象资源的一个弱智能指针。<br>
+当我们调用 shared_from_this() 的时候，通过当前A对象的成员变量 _Wptr 来构造一个shared_ptr。</p>
+<pre><code>shared_ptr(const weak_ptr&lt;_Ty2&gt;&amp; _Other)
+{	
+if (!this-&gt;_Construct_from_weak(_Other)) // 从弱智能指针提升一个强智能指针
+	{
+	_THROW(bad_weak_ptr{});
+	}
+}
+</code></pre>
+<p>_Construct_from_weak() 的实现如下</p>
+<pre><code class="language-template&lt;class">bool _Construct_from_weak(const weak_ptr&lt;_Ty2&gt;&amp; _Other)
+{	
+if (_Other._Rep &amp;&amp; _Other._Rep-&gt;_Incref_nz())
+	{
+	_Ptr = _Other._Ptr;
+	_Rep = _Other._Rep;
+	return (true);
+	}
+
+return (false);
+}
+</code></pre>
+<p>if通过判断资源的引用计数是否还在，判定对象的存活状态，对象存活，提升成功.</p>
+<h2 id="问题-实际上在构造stdenable_shared_from_thist时并没有初始化stdweak_ptrt成员而是在用这个stdenable_shared_from_thist去构造stdshared_ptr的时候去构造并初始化这个stdweak_ptrt成员">问题 实际上在构造std::enable_shared_from_this<T>时，并没有初始化std::weak_ptr<T>成员，而是在用这个std::enable_shared_from_this<T>去构造std::shared_ptr的时候，去构造并初始化这个std::weak_ptr<T>成员</h2>
+<p>必须等子类初始化成功后，父类才能拿到真正的std::weak_ptr。因此，对象必须已经是std::shared_ptr 管理的。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#cpp-reference">cpp reference</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF-%E4%BF%9D%E8%AF%81%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%AD%E6%93%8D%E4%BD%9C%E7%9A%84%E5%AF%B9%E8%B1%A1%E4%BE%9D%E7%84%B6%E6%9C%89%E6%95%88">使用场景 : 保证异步回调中操作的对象依然有效</a></li>
+<li><a href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86">工作原理</a></li>
+<li><a href="#%E9%97%AE%E9%A2%98-%E5%AE%9E%E9%99%85%E4%B8%8A%E5%9C%A8%E6%9E%84%E9%80%A0stdenable_shared_from_thist%E6%97%B6%E5%B9%B6%E6%B2%A1%E6%9C%89%E5%88%9D%E5%A7%8B%E5%8C%96stdweak_ptrt%E6%88%90%E5%91%98%E8%80%8C%E6%98%AF%E5%9C%A8%E7%94%A8%E8%BF%99%E4%B8%AAstdenable_shared_from_thist%E5%8E%BB%E6%9E%84%E9%80%A0stdshared_ptr%E7%9A%84%E6%97%B6%E5%80%99%E5%8E%BB%E6%9E%84%E9%80%A0%E5%B9%B6%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%99%E4%B8%AAstdweak_ptrt%E6%88%90%E5%91%98">问题 实际上在构造std::enable_shared_from_this<T>时，并没有初始化std::weak_ptr<T>成员，而是在用这个std::enable_shared_from_this<T>去构造std::shared_ptr的时候，去构造并初始化这个std::weak_ptr<T>成员</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://waitfordx.github.io/post/linux-zhi-shi-za-ji/">
+              <h3 class="post-title">
+                Linux 知识杂记
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://waitfordx.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
